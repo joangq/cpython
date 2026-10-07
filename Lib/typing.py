@@ -3416,7 +3416,7 @@ class _TypedDictSpecialForm:
     """
 
     __module__ = 'typing'
-    __name__ = 'TypedDict'
+    __name__ = __qualname__ = 'TypedDict'
 
     def __call__(self, typename, fields, /, *, total=True, closed=None,
               extra_items=NoExtraItems):
@@ -3430,7 +3430,7 @@ class _TypedDictSpecialForm:
                 f'TypedDict[{{...}}] must be subscripted with a dict literal.'
                 + f' Got {type(parameters).__name__!r} instead.'
             )
-            
+
             raise TypeError(error_msg)
 
         result = self('<inline TypedDict>', parameters)
