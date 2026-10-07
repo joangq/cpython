@@ -3396,7 +3396,11 @@ def _typed_dict_factory(typename, fields, /, *, total=True, closed=None,
     See PEPs 589, 655, 705, and 728 for more information.
     """
     ns = {'__annotations__': dict(fields)}
-    module = _caller()
+    
+    # bump to depth=2 to account for the new wrapper layer, due to _TypedDictSpecialForm
+    # calling _typed_dict_factory
+    module = _caller(depth=2)
+    
     if module is not None:
         # Setting correct module is necessary to make typed dict classes pickleable.
         ns['__module__'] = module
@@ -3410,7 +3414,7 @@ class _TypedDictSpecialForm:
     """
     Factory and inline form for creating TypedDict classes
     """
-    
+
     __module__ = 'typing'
     __name__ = 'TypedDict'
 
