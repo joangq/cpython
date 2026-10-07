@@ -3425,6 +3425,14 @@ class _TypedDictSpecialForm:
             closed=closed, extra_items=extra_items)
     
     def __getitem__(self, parameters):
+        if not isinstance(parameters, dict):
+            error_msg = (
+                f'TypedDict[{{...}}] must be subscripted with a dict literal.'
+                + f' Got {type(parameters).__name__!r} instead.'
+            )
+            
+            raise TypeError(error_msg)
+
         result = self('<inline TypedDict>', parameters)
         result.__module__ = _TypedDictSpecialForm.__module__
         result.__inline_fields__ = parameters
