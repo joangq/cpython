@@ -9109,6 +9109,10 @@ class TypedDictTests(BaseTestCase):
         # The TypedDict constructor is not itself a TypedDict
         self.assertIs(is_typeddict(TypedDict), False)
 
+        # PEP764 Inline form
+        Inline = TypedDict[{'a': int, 'b': str}]
+        self.assertIs(is_typeddict(Inline), True)
+
     def test_get_type_hints(self):
         self.assertEqual(
             get_type_hints(Bar),
@@ -9523,6 +9527,7 @@ class TypedDictTests(BaseTestCase):
             {'x': 'NotRequired[undefined]', 'y': 'ReadOnly[undefined]',
              'z': 'Required[undefined]'},
         )
+
 
 
 class RequiredTests(BaseTestCase):
