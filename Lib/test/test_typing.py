@@ -9527,6 +9527,19 @@ class TypedDictTests(BaseTestCase):
             {'x': 'NotRequired[undefined]', 'y': 'ReadOnly[undefined]',
              'z': 'Required[undefined]'},
         )
+    
+    def test_pep764_inline_typeddict(self):
+        Inline = TypedDict[{'a': int, 'b': str}]
+
+        self.assertEqual(Inline.__annotations__, {'a': int, 'b': str})
+        self.assertEqual(Inline.__required_keys__, frozenset({'a', 'b'}))
+        self.assertEqual(Inline.__total__, True)
+
+        with self.assertRaises(TypeError):
+            TypedDict[int]
+        
+        with self.assertRaises(TypeError):
+            TypedDict['name', int]
 
 
 
