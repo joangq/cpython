@@ -3313,7 +3313,7 @@ class _TypedDictMeta(type):
     __instancecheck__ = __subclasscheck__
 
 
-def TypedDict(typename, fields, /, *, total=True, closed=None,
+def _typed_dict_factory(typename, fields, /, *, total=True, closed=None,
               extra_items=NoExtraItems):
     """A simple typed namespace. At runtime it is equivalent to a plain dict.
 
@@ -3406,8 +3406,35 @@ def TypedDict(typename, fields, /, *, total=True, closed=None,
     td.__orig_bases__ = (TypedDict,)
     return td
 
+class _TypedDictSpecialForm:
+    """
+    Factory and inline form for creating TypedDict classes
+    """
+    
+    __module__ = 'typing'
+    __name__ = 'TypedDict'
+
+    def __call__(self, typename, fields, /, *, total=True, closed=None,
+              extra_items=NoExtraItems):
+
+        return _typed_dict_factory(typename, fields, total=total, 
+            closed=closed, extra_items=extra_items)
+    
+    def __getitem__(self, parameters):
+        result = self('<inline TypedDict>', parameters)
+        result.__module__ = _TypedDictSpecialForm.__module__
+        result.__inline_fields__ = parameters
+        return result
+
+    def __mro_entries__(self, bases):
+        return (_TypedDict,)
+
+
+# TypedDict.__mro_entries__ = lambda bases: (_TypedDict,)
+
+TypedDict = _TypedDictSpecialForm()
+TypedDict.__doc__ = _TypedDictSpecialForm.__doc__
 _TypedDict = type.__new__(_TypedDictMeta, 'TypedDict', (), {})
-TypedDict.__mro_entries__ = lambda bases: (_TypedDict,)
 
 
 @_SpecialForm
